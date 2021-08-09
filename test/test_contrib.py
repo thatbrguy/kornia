@@ -14,9 +14,7 @@ class TestConnectedComponents:
         out = kornia.contrib.connected_components(img, num_iterations=10)
         assert out.shape == (1, 1, 3, 4)
 
-    @pytest.mark.parametrize("shape", [
-        (3, 4), (1, 3, 4), (2, 1, 3, 4)
-    ])
+    @pytest.mark.parametrize("shape", [(3, 4), (1, 3, 4), (2, 1, 3, 4)])
     def test_cardinality(self, device, dtype, shape):
         img = torch.rand(shape, device=device, dtype=dtype)
         out = kornia.contrib.connected_components(img, num_iterations=10)
