@@ -92,7 +92,7 @@ def solve_pnp_dlt(
     world_points_h = convert_points_to_homogeneous(world_points)
 
     # Getting normalized image points.
-    norm_points = (intrinsic_inv @ img_points_h.T).T
+    norm_points = torch.matmul(intrinsic_inv, img_points_h.T).T
 
     # Setting up the system (the matrix A in Ax=0)
     system = torch.zeros((2 * N, 12), dtype=world_points.dtype, device=world_points.device)

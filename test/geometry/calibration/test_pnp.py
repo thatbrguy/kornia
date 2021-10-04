@@ -15,9 +15,9 @@ class TestSolvePnpDlt:
 
     def _project_to_image(self, world_points, world_to_cam_4x4, intrinsic):
         world_points_h = convert_points_to_homogeneous(world_points)
-        cam_points = ((world_to_cam_4x4 @ world_points_h.T).T)[:, :3]
+        cam_points = (torch.matmul(world_to_cam_4x4, world_points_h.T).T)[:, :3]
 
-        temp = (intrinsic @ cam_points.T).T
+        temp = torch.matmul(intrinsic, cam_points.T).T
         img_points = temp[:, :2] / temp[:, 2:3]
 
         return img_points
@@ -72,7 +72,7 @@ class TestSolvePnpDlt:
 
         assert gradcheck(
             kornia.solve_pnp_dlt, (world_points, img_points, intrinsic),
-            raise_exception=True, atol=1e-4, nondet_tol=1e-8
+            raise_exception=True, atol=1e-4
         )
 
     @pytest.mark.parametrize("num_points", (6, 20, 200))
@@ -84,7 +84,7 @@ class TestSolvePnpDlt:
         assert_close(pred_world_to_cam, gt_world_to_cam, atol=1e-4, rtol=1e-4)
 
     @pytest.mark.parametrize("num_points", (6, 20, 200))
-    def test_pred_world_to_cam(self, num_points, device, dtype):
+    def test_project(self, num_points, device, dtype):
         intrinsic, gt_world_to_cam, world_points, img_points = \
             self._get_test_data(num_points, device, dtype)
 
